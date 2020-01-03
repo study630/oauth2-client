@@ -7,6 +7,8 @@ import net.minidev.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,10 +26,12 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
 
+//@EnableOAuth2Sso
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -36,9 +40,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
+//    @Autowired
+//    UserInfoTokenServices userInfoTokenServices;
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
+        //http.csrf().disable();
 
         http
             .logout()
@@ -60,6 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) {
         web.ignoring().mvcMatchers("/assets/**", "/img/**", "/favicon.ico");
     }
+
 
     /**
      * 从user-info-uri 返回结果中抽取权限信息，如角色等，默认为scope
@@ -119,6 +127,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             if (!StringUtils.hasText(userNameAttributeName)) {
                 userNameAttributeName = "sub";
             }
+
+            String url = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUri();
+            UserInfoTokenServices userInfoTokenServices = new UserInfoTokenServices(url,userRequest.getAccessToken().getTokenValue());
+            OAuth2Authentication oAuth2Authentication= userInfoTokenServices.loadAuthentication(userRequest.getAccessToken().getTokenValue());
+            Map<String, Object> userAttributes = new HashMap<>(16);
+            userAttributes.put(userNameAttributeName, oAuth2Authentication.getName());
+            OAuth2User oAuth2User = new DefaultOAuth2User(oAuth2Authentication.getAuthorities(), userAttributes, userNameAttributeName);
+            return oAuth2User;
+            /*
             OAuth2AccessToken accessToken = userRequest.getAccessToken();
             Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
             try {
@@ -156,6 +173,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 log.error("oauth2UserService Exception", e);
             }
             return null;
+            */
         };
     }
 

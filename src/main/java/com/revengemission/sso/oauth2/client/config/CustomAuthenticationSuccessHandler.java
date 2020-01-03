@@ -49,12 +49,12 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
                 .loadAuthorizedClient(
                     ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId(),
                     authentication.getName());
-            String token = client.getAccessToken().getTokenValue();
-            Cookie tokenCookie = new Cookie("access_token", token);
-            tokenCookie.setHttpOnly(true);
-            tokenCookie.setDomain(cookieDomain);
-            tokenCookie.setPath("/");
-            response.addCookie(tokenCookie);
+//            String token = client.getAccessToken().getTokenValue();
+//            Cookie tokenCookie = new Cookie("access_token", token);
+//            tokenCookie.setHttpOnly(true);
+//            tokenCookie.setDomain(cookieDomain);
+//            tokenCookie.setPath("/");
+//            response.addCookie(tokenCookie);
         }
 
         //设置回调成功的页面，

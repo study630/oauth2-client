@@ -33,7 +33,7 @@ import java.time.Instant;
 /**
  * 刷新过期access_token
  */
-@Component
+//@Component
 public class RefreshExpiredTokenFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(RefreshExpiredTokenFilter.class);
