@@ -127,7 +127,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             if (!StringUtils.hasText(userNameAttributeName)) {
                 userNameAttributeName = "sub";
             }
-
+            System.out.println("http://server.sso.com:10380/user/me?access_token=" + userRequest.getAccessToken().getTokenValue());
             String url = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUri();
             UserInfoTokenServices userInfoTokenServices = new UserInfoTokenServices(url,userRequest.getAccessToken().getTokenValue());
             OAuth2Authentication oAuth2Authentication= userInfoTokenServices.loadAuthentication(userRequest.getAccessToken().getTokenValue());
